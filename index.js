@@ -3,6 +3,7 @@ const util = require("util");
 const axios = require("axios");
 const inquirer = require("inquirer");
 const pdf = require("html-pdf");
+
 // const convertFactory = require("electron-html-to");
 const generateHTML = require("./generateHTML");
 
@@ -25,7 +26,6 @@ const questions = [
 function getData() {
   return new Promise(function(resolve, reject) {
     inquirer.prompt(questions).then(async function(answers) {
-      //questions.username & questions.color
       const { username, color } = answers;
       const queryUrl = `https://api.github.com/users/${username}`;
       try {
@@ -42,6 +42,7 @@ function getData() {
     });
   });
 }
+
 function getStars(username) {
   const queryUrl2 = `https://api.github.com/users/${username}/starred`;
   return axios.get(queryUrl2).then(function(res) {
@@ -50,6 +51,7 @@ function getStars(username) {
   });
 }
 init();
+
 async function init(repos) {
   try {
     const data = await getData();
