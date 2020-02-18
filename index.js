@@ -22,7 +22,7 @@ const questions = [
   }
 ];
 
-function firstCall() {
+function getData() {
   return new Promise(function(resolve, reject) {
     inquirer.prompt(questions).then(async function(answers) {
       //questions.username & questions.color
@@ -30,7 +30,7 @@ function firstCall() {
       const queryUrl = `https://api.github.com/users/${username}`;
       try {
         const response = await axios.get(queryUrl);
-        const stars = await secondCall(username);
+        const stars = await getStars(username);
         resolve({
           ...response.data,
           color,
@@ -42,7 +42,24 @@ function firstCall() {
     });
   });
 }
-
-function init() {}
-
+function getStars(username) {
+  const queryUrl2 = `https://api.github.com/users/${username}/starred`;
+  return axios.get(queryUrl2).then(function(res) {
+    const repos = res.data.length;
+    return repos;
+  });
+}
 init();
+async function init(repos) {
+  try {
+    const data = await getData();
+    const html = generateHTML(data);
+    await writeFileAsync("./profile.html", html);
+    pdf.create(html).toFile("./profile.pdf", function(err, res) {
+      if (err) throw err;
+      console.log(res);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
